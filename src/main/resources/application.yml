@@ -1,0 +1,6 @@
+#
+# application.yml — главный конфигурационный файл Spring Boot.
+
+spring:
+  datasource:
+    url:
