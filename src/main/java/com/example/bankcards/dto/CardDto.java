@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public record CardDto(
         Long id,
         String cardNumber,
-        LocalDate expireDate,
+        LocalDate expiredDate,
         BigDecimal balance,
         Status status,
         Long userId
