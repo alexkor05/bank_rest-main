@@ -2,7 +2,8 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CreateUserRequest;
 import com.example.bankcards.dto.UserDto;
-import com.example.bankcards.service.UserService;
+import com.example.bankcards.service.IUserService;
+import com.example.bankcards.service.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final IUserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> findById(@PathVariable Long id) {

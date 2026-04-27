@@ -12,15 +12,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CardService {
+public class CardServiceImpl implements ICardService{
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final CardMapper cardMapper;
 
+    @Override
     public CardDto createCard(CreateCardRequest createCardRequest) {
         Card card = cardMapper.toCard(createCardRequest);
+
         card.setUser(userRepository.findById(createCardRequest.userId())
                 .orElseThrow(() -> new EntityNotFoundException("User with Id = " + createCardRequest.userId() + " not found")));
+
         Card createdCard = cardRepository.save(card);
         return cardMapper.toCardDto(createdCard);
     }

@@ -11,9 +11,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserServiceImpl implements IUserService{
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+
 
     public UserDto findById(Long id) {
         User user = userRepository.findByIdWithCards(id)

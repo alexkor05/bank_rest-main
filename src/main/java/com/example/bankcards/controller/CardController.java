@@ -3,7 +3,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CreateCardRequest;
-import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.CardServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/cards")
 @RequiredArgsConstructor
 public class CardController {
-    private final CardService cardService;
+    private final CardServiceImpl cardService;
 
     @PostMapping
     public ResponseEntity<CardDto> createCard(@RequestBody @Valid CreateCardRequest createCardRequest) {
