@@ -8,5 +8,5 @@ public interface ICardService {
     CardDto createCard(CreateCardRequest createCardRequest);
     CardDto findById(Long id);
     CardDto updateCard(Long id, UpdateCardRequest updateCardRequest);
-    void delete(Long id);
+    void deleteCard(Long id);
 }

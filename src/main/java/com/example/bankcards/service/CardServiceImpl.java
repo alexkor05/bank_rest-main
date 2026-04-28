@@ -56,7 +56,7 @@ public class CardServiceImpl implements ICardService{
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void deleteCard(Long id) {
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Card with ID=" + id + " not found"));
         cardRepository.delete(card);
