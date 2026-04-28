@@ -28,7 +28,7 @@ public class CardController {
         return ResponseEntity.ok().body(cardService.findById(id));
     }
 
-    @PutMapping("/{id")
+    @PutMapping("/{id}")
     public ResponseEntity<CardDto> updateCard(@RequestBody @Valid UpdateCardRequest updateCardRequest,
                                               @PathVariable Long id) {
         return ResponseEntity.ok().body(cardService.updateCard(id, updateCardRequest));

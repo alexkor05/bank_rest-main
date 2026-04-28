@@ -51,7 +51,7 @@ public class CardServiceImpl implements ICardService{
         card.setBalance(updateCardRequest.balance());
         card.setExpiredDate(updateCardRequest.expiredDate());
 
-        return cardMapper.toCardDto(card);
+        return cardMapper.toCardDto(cardRepository.save(card));
     }
 
     @Override

@@ -48,7 +48,8 @@ public class UserServiceImpl implements IUserService{
         user.setFirstname(updateUserRequest.firstname());
         user.setLastname(updateUserRequest.lastname());
         user.setRole(updateUserRequest.role());
-        return userMapper.toUserDto(user);
+        User savedUser = userRepository.save(user);
+        return userMapper.toUserDto(savedUser);
     }
 
     @Override
