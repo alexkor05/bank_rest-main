@@ -14,5 +14,6 @@ public record CreateUserRequest(
         @NotBlank String lastname,
         @DateTimeFormat(pattern = "yyyy-MM-dd") @Past LocalDate birthDate,
         @Email  String email,
+        @NotBlank String password,
         @NotNull Role role
 ) {}
