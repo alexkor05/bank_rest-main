@@ -1,14 +1,19 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CreateUserRequest;
 import com.example.bankcards.dto.UpdateUserRequest;
 import com.example.bankcards.dto.UserDto;
+import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.mapper.UserListMapper;
 import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,24 +23,32 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserServiceImpl implements IUserService{
+
     private final UserMapper userMapper;
     private final UserListMapper userListMapper;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-
-
-
+    @PreAuthorize("#id==authentication.principal.id or hasAuthority('ADMIN')")
     public UserDto findById(Long id) {
         User user = userRepository.findByIdWithCards(id)
                 .orElseThrow(() -> new EntityNotFoundException("User with Id = " + id + " not found"));
-        return userMapper.toUserDto(user);
+        UserDto userDto = userMapper.toUserDto(user);
+
+        maskCards(userDto);
+
+        return userDto;
     }
 
     @Transactional
     public UserDto createUser(CreateUserRequest createUserRequest) {
         User user = userMapper.toUser(createUserRequest);
+        user.setPassword(passwordEncoder.encode(createUserRequest.password()));
         User createdUser = userRepository.save(user);
-        return userMapper.toUserDto(createdUser);
+        UserDto userDto = userMapper.toUserDto(createdUser);
+
+        maskCards(userDto);
+        return userDto;
     }
 
     @Override
@@ -49,7 +62,11 @@ public class UserServiceImpl implements IUserService{
         user.setLastname(updateUserRequest.lastname());
         user.setRole(updateUserRequest.role());
         User savedUser = userRepository.save(user);
-        return userMapper.toUserDto(savedUser);
+
+        UserDto userDto = userMapper.toUserDto(savedUser);
+
+        maskCards(userDto);
+        return userDto;
     }
 
     @Override
@@ -63,7 +80,21 @@ public class UserServiceImpl implements IUserService{
     @Override
     public List<UserDto> findAll() {
         List<User> users = userRepository.findAll();
-        return userListMapper.toUserDtoList(users);
+
+        List<UserDto> userDtoList = userListMapper.toUserDtoList(users);
+
+        for (UserDto userDto : userDtoList) {
+            maskCards(userDto);
+        }
+
+        return userDtoList;
+    }
+
+    private void maskCards(UserDto userDto) {
+        for(CardDto cardDto : userDto.cards()) {
+            CardSecurityUtils.decrypt(cardDto);
+            CardSecurityUtils.mask(cardDto);
+        }
     }
 
 }

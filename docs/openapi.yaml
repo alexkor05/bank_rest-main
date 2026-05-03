@@ -1,1 +1,420 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.1.0
+info:
+  title: Bank Cards API
+  version: v1
+  description: >
+    Production-style REST API contract for customer and card management.
+    Runtime documentation is also exposed by Springdoc at /swagger-ui.html
+    and /v3/api-docs.
+  contact:
+    name: Bank Cards Platform Team
+    email: platform-team@example.com
+  license:
+    name: Proprietary
+servers:
+  - url: /
+    description: Current environment behind API gateway
+  - url: http://localhost:8080
+    description: Local development
+tags:
+  - name: Cards
+    description: Card issuing, lookup, update, blocking status, and deletion flows.
+  - name: Users
+    description: Customer profile and role management.
+security:
+  - bearerAuth: []
+paths:
+  /api/cards:
+    post:
+      tags:
+        - Cards
+      operationId: createCard
+      summary: Issue a new card
+      description: Creates a bank card for an existing customer and returns the masked card profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCardRequest'
+      responses:
+        '201':
+          description: Card created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/cards/{id}:
+    get:
+      tags:
+        - Cards
+      operationId: getCardById
+      summary: Get card by ID
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '200':
+          description: Card found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Cards
+      operationId: updateCard
+      summary: Update card
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCardRequest'
+      responses:
+        '200':
+          description: Card updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Cards
+      operationId: deleteCard
+      summary: Delete card
+      parameters:
+        - $ref: '#/components/parameters/CardId'
+      responses:
+        '204':
+          description: Card deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/users:
+    get:
+      tags:
+        - Users
+      operationId: getUsers
+      summary: Get all users
+      responses:
+        '200':
+          description: Users returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+        - Users
+      operationId: createUser
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/users/{id}:
+    get:
+      tags:
+        - Users
+      operationId: getUserById
+      summary: Get user by ID
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Users
+      operationId: updateUser
+      summary: Update user
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Users
+      operationId: deleteUser
+      summary: Delete user
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '204':
+          description: User deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Paste a JWT access token without the Bearer prefix.
+  parameters:
+    CardId:
+      name: id
+      in: path
+      required: true
+      description: Card identifier.
+      schema:
+        type: integer
+        format: int64
+        example: 1001
+    UserId:
+      name: id
+      in: path
+      required: true
+      description: User identifier.
+      schema:
+        type: integer
+        format: int64
+        example: 501
+  responses:
+    BadRequest:
+      description: Invalid request payload
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+    Unauthorized:
+      description: Missing or invalid JWT token
+    NotFound:
+      description: Requested resource was not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+  schemas:
+    Role:
+      type: string
+      enum:
+        - USER
+        - ADMIN
+      example: USER
+    Status:
+      type: string
+      enum:
+        - ACTIVE
+        - BLOCKED
+        - EXPIRED
+      example: ACTIVE
+    CardDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1001
+        cardNumber:
+          type: string
+          description: Masked primary account number.
+          example: '**** **** **** 4242'
+        expiredDate:
+          type: string
+          format: date
+          example: '2029-12-31'
+        balance:
+          type: number
+          example: 12500.75
+        status:
+          $ref: '#/components/schemas/Status'
+        userId:
+          type: integer
+          format: int64
+          example: 501
+    CreateCardRequest:
+      type: object
+      required:
+        - cardNumber
+        - balance
+        - status
+        - userId
+      properties:
+        cardNumber:
+          type: string
+          example: '4111111111114242'
+        expiredDate:
+          type: string
+          format: date
+          example: '2029-12-31'
+        balance:
+          type: number
+          example: 1000.00
+        status:
+          $ref: '#/components/schemas/Status'
+        userId:
+          type: integer
+          format: int64
+          example: 501
+    UpdateCardRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateCardRequest'
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 501
+        firstname:
+          type: string
+          example: Alex
+        lastname:
+          type: string
+          example: Korobov
+        birthDate:
+          type: string
+          format: date
+          example: '1996-04-15'
+        email:
+          type: string
+          format: email
+          example: alex.korobov@example.com
+        role:
+          $ref: '#/components/schemas/Role'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/CardDto'
+    CreateUserRequest:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - password
+        - role
+      properties:
+        firstname:
+          type: string
+          example: Alex
+        lastname:
+          type: string
+          example: Korobov
+        birthDate:
+          type: string
+          format: date
+          example: '1996-04-15'
+        email:
+          type: string
+          format: email
+          example: alex.korobov@example.com
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          example: StrongPass123!
+        role:
+          $ref: '#/components/schemas/Role'
+    UpdateUserRequest:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - role
+      properties:
+        firstname:
+          type: string
+          example: Alex
+        lastname:
+          type: string
+          example: Korobov
+        birthDate:
+          type: string
+          format: date
+          example: '1996-04-15'
+        email:
+          type: string
+          format: email
+          example: alex.korobov@example.com
+        role:
+          $ref: '#/components/schemas/Role'
+    ProblemDetail:
+      type: object
+      properties:
+        type:
+          type: string
+          example: about:blank
+        title:
+          type: string
+          example: Invalid payload request
+        status:
+          type: integer
+          example: 400
+        detail:
+          type: string
+          example: Validation failed
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: expiredDate
+              message:
+                type: string
+                example: must be a future date

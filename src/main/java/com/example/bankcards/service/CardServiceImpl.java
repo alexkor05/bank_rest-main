@@ -9,7 +9,10 @@ import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,15 +33,33 @@ public class CardServiceImpl implements ICardService{
         card.setUser(userRepository.findById(createCardRequest.userId())
                 .orElseThrow(() -> new EntityNotFoundException("User with Id = " + createCardRequest.userId() + " not found")));
 
+//        card.setCardNumber(CardSecurityUtils.encrypt(createCardRequest.cardNumber()));
+        CardSecurityUtils.encrypt(card);
+
         Card createdCard = cardRepository.save(card);
-        return cardMapper.toCardDto(createdCard);
+
+        CardDto cardDto = cardMapper.toCardDto(createdCard);
+//        cardDto.setCardNumber(CardSecurityUtils.mask(CardSecurityUtils.decrypt(createdCard.getCardNumber())));
+        CardSecurityUtils.decrypt(cardDto);
+        CardSecurityUtils.mask(cardDto);
+
+        return cardDto;
     }
 
+    @PostAuthorize("returnObject.userId == authentication.principal.id")
     @Override
     public CardDto findById(Long id) {
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Card with ID=" + id + " not found"));
-        return cardMapper.toCardDto(card);
+
+        CardDto cardDto = cardMapper.toCardDto(card);
+
+        CardSecurityUtils.decrypt(cardDto);
+        CardSecurityUtils.mask(cardDto);
+//        cardDto.setCardNumber(CardSecurityUtils.mask(CardSecurityUtils.decrypt(card.getCardNumber())));
+
+        return cardDto;
+
     }
 
     @Override
@@ -50,8 +71,18 @@ public class CardServiceImpl implements ICardService{
         card.setStatus(updateCardRequest.status());
         card.setBalance(updateCardRequest.balance());
         card.setExpiredDate(updateCardRequest.expiredDate());
+//        card.setCardNumber(CardSecurityUtils.encrypt(updateCardRequest.cardNumber()));
+        CardSecurityUtils.encrypt(card);
 
-        return cardMapper.toCardDto(cardRepository.save(card));
+        Card updatedCard = cardRepository.save(card);
+
+        CardDto cardDto = cardMapper.toCardDto(updatedCard);
+
+//        cardDto.setCardNumber(CardSecurityUtils.mask(CardSecurityUtils.decrypt(updatedCard.getCardNumber())));
+        CardSecurityUtils.decrypt(cardDto);
+        CardSecurityUtils.mask(cardDto);
+
+        return cardDto;
     }
 
     @Override
