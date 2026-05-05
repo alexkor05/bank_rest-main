@@ -37,5 +37,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(UserNotOwnerProvidedCardException.class)
+    public ProblemDetail userNotOwnerProvidedCardExceptionHandler(UserNotOwnerProvidedCardException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problemDetail.setTitle("Bad request");
+        return problemDetail;
+    }
+
 
 }

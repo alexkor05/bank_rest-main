@@ -23,6 +23,8 @@ public class Card {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

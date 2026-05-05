@@ -1,10 +1,6 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.dto.CreateUserRequest;
-import com.example.bankcards.dto.UpdateUserRequest;
-import com.example.bankcards.dto.UserDto;
-import com.example.bankcards.entity.Card;
+import com.example.bankcards.dto.*;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.mapper.UserListMapper;
@@ -36,6 +32,7 @@ public class UserServiceImpl implements IUserService{
         UserDto userDto = userMapper.toUserDto(user);
 
         maskCards(userDto);
+
 
         return userDto;
     }
@@ -87,8 +84,11 @@ public class UserServiceImpl implements IUserService{
             maskCards(userDto);
         }
 
+
         return userDtoList;
     }
+
+
 
     private void maskCards(UserDto userDto) {
         for(CardDto cardDto : userDto.cards()) {
