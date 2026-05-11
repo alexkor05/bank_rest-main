@@ -16,16 +16,16 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "card_number", unique = true, nullable = true)
+    @Column(name = "card_number", unique = true, nullable = false)
     private String cardNumber;
 
-    @Column(name = "balance", nullable = true)
+    @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
-    @Column(name = "expired_date", nullable = true)
+    @Column(name = "expired_date", nullable = false)
     private LocalDate expiredDate;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 

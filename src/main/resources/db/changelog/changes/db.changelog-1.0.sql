@@ -1,5 +1,7 @@
 --liquibase formatted sql
 
+
+
 --changeset akorobov:1
 CREATE TABLE IF NOT EXISTS users
 (
