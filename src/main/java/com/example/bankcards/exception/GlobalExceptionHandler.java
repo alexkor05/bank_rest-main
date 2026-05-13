@@ -45,12 +45,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ProblemDetail ExpiredJwtExceptionHandler(ExpiredJwtException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problemDetail.setTitle("Jwt access token has expired");
-        return problemDetail;
-    }
 
 
 }

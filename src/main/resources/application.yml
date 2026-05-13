@@ -1,7 +1,17 @@
-#
-# application.yml — главный конфигурационный файл Spring Boot.
 
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      group-id: bank-cards-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
   datasource:
     url: jdbc:postgresql://localhost:5433/bank_cards
     username: postgres
@@ -11,7 +21,6 @@ spring:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
 
-
   jpa:
     hibernate:
       ddl-auto: none
@@ -19,6 +28,9 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
+
+
 
 jwt:
   secret: "SamsungSamsungSamsungSamsungSamsung"
