@@ -22,8 +22,8 @@ public class Card {
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
-    @Column(name = "expired_date", nullable = false)
-    private LocalDate expiredDate;
+    @Column(name = "expiry_date", nullable = false)
+    private LocalDate expiryDate;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)

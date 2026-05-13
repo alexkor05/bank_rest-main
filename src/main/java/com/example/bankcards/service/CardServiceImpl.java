@@ -14,7 +14,6 @@ import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.UserPrincipal;
 import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -74,7 +73,7 @@ public class CardServiceImpl implements ICardService{
         card.setCardNumber(updateCardRequest.cardNumber());
         card.setStatus(updateCardRequest.status());
         card.setBalance(updateCardRequest.balance());
-        card.setExpiredDate(updateCardRequest.expiredDate());
+        card.setExpiryDate(updateCardRequest.expiryDate());
         CardSecurityUtils.encrypt(card);
 
         Card updatedCard = cardRepository.save(card);

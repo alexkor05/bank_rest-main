@@ -22,4 +22,6 @@ spring:
 
 jwt:
   secret: "SamsungSamsungSamsungSamsungSamsung"
-  expiration: 3600000
+  expiration:
+    access: 900000
+    refresh: 604800000

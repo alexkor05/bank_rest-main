@@ -27,12 +27,12 @@ public class UserServiceImpl implements IUserService{
 
     @PreAuthorize("#id==authentication.principal.id or hasAuthority('ADMIN')")
     public UserDto findById(Long id) {
-        User user = userRepository.findByIdWithCards(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User with Id = " + id + " not found"));
+
         UserDto userDto = userMapper.toUserDto(user);
 
         maskCards(userDto);
-
 
         return userDto;
     }

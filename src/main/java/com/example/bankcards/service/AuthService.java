@@ -2,6 +2,9 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.AuthResponse;
 import com.example.bankcards.dto.LoginRequest;
+import com.example.bankcards.dto.RefreshRequest;
+import com.example.bankcards.entity.RefreshToken;
+import com.example.bankcards.entity.User;
 import com.example.bankcards.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +21,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthResponse login(LoginRequest request) {
 
@@ -29,10 +33,23 @@ public class AuthService {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
 
-        String token = jwtService.generateToken(userDetails);
+        String accessToken = jwtService.generateAccessToken(userDetails);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails);
 
-        return new AuthResponse(token);
 
+        return new AuthResponse(accessToken, refreshToken.getToken());
+
+    }
+
+    public AuthResponse refresh(RefreshRequest refreshRequest) {
+        RefreshToken refreshToken = refreshTokenService.verifyToken(refreshRequest.refreshToken());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(refreshToken.getUser().getEmail());
+        String accessToken = jwtService.generateAccessToken(userDetails);
+        return new AuthResponse(accessToken, refreshRequest.refreshToken());
+    }
+
+    public void logout(String refreshToken){
+        refreshTokenService.deleteToken(refreshToken);
     }
 
 }

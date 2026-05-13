@@ -20,7 +20,7 @@ public record CreateCardRequest(
         @Schema(description = "Card expiration date", example = "2031-02-10")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         @Future
-        LocalDate expiredDate,
+        LocalDate expiryDate,
 
         @Schema(description = "Card balance", example = "12000")
         @NotNull

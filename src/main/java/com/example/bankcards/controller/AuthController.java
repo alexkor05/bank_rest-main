@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.AuthResponse;
 import com.example.bankcards.dto.LoginRequest;
+import com.example.bankcards.dto.RefreshRequest;
 import com.example.bankcards.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,4 +19,16 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
         return ResponseEntity.status(HttpStatus.OK).body(authService.login(loginRequest));
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshRequest refreshRequest) {
+        return ResponseEntity.status(HttpStatus.OK).body(authService.refresh(refreshRequest));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody RefreshRequest refreshRequest) {
+        authService.logout(refreshRequest.refreshToken());
+        return ResponseEntity.noContent().build();
+    }
+
 }
