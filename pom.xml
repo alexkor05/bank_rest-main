@@ -11,6 +11,7 @@
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name/>
     <description/>
     <url/>
@@ -20,6 +21,11 @@
     <developers>
         <developer/>
     </developers>
+    <modules>
+        <module>email_module</module>
+<!--        <module>bank_card_module</module>-->
+        <module>bank_cards_module</module>
+    </modules>
     <scm>
         <connection/>
         <developerConnection/>
@@ -101,6 +107,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
