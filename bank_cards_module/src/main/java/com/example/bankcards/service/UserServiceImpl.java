@@ -24,6 +24,7 @@ public class UserServiceImpl implements IUserService{
     private final UserListMapper userListMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaProducerService kafkaProducerService;
 
 
     @PreAuthorize("#id==authentication.principal.id or hasAuthority('ADMIN')")
@@ -46,6 +47,17 @@ public class UserServiceImpl implements IUserService{
         UserDto userDto = userMapper.toUserDto(createdUser);
 
         maskCards(userDto);
+
+        NotificationEvent event = new NotificationEvent(
+                userDto.email(),
+                userDto.firstname(),
+                userDto.lastname(),
+                EventType.USER_REGISTERED,
+                "Your registration has been successfully confirmed."
+        );
+
+        kafkaProducerService.sendMessage(event);
+
         return userDto;
     }
 

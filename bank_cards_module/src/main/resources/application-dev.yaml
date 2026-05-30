@@ -1,15 +1,4 @@
 spring:
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.support.serializer.JsonSerializer
-      acks: all
-#    consumer:
-#      group-id: bank-cards-consumer-group
-#      auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
   datasource:
     url: jdbc:postgresql://localhost:5433/bank_cards

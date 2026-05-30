@@ -54,8 +54,4 @@ public class UserServiceIntegrationTest {
     }
 
 
-    @Test
-    void findAll() {
-        Assertions.assertTrue(true);
-    }
 }

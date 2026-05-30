@@ -11,4 +11,5 @@ public interface ICardService {
     CardDto updateCard(Long id, UpdateCardRequest updateCardRequest);
     void deleteCard(Long id);
     void transfer(TransferRequest transferRequest);
+
 }

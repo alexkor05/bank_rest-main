@@ -1,10 +1,7 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CardDto;
-import com.example.bankcards.dto.CreateCardRequest;
-import com.example.bankcards.dto.TransferRequest;
-import com.example.bankcards.dto.UpdateCardRequest;
-import com.example.bankcards.entity.Card;
+import com.example.bankcards.dto.*;
+import com.example.bankcards.entity.*;
 import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.exception.InsufficientFundsException;
 import com.example.bankcards.exception.UserNotOwnerProvidedCardException;
@@ -16,28 +13,34 @@ import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+
 
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CardServiceImpl implements ICardService{
+
+
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
+    private final KafkaProducerService kafkaProducerService;
     private final CardMapper cardMapper;
+
 
     @Override
     @Transactional
     public CardDto createCard(CreateCardRequest createCardRequest) {
         Card card = cardMapper.toCard(createCardRequest);
+        User user = userRepository.findById(createCardRequest.userId())
+                .orElseThrow(() -> new EntityNotFoundException("User with Id = " + createCardRequest.userId() + " not found"));
 
-        card.setUser(userRepository.findById(createCardRequest.userId())
-                .orElseThrow(() -> new EntityNotFoundException("User with Id = " + createCardRequest.userId() + " not found")));
+        card.setUser(user);
 
         CardSecurityUtils.encrypt(card);
 
@@ -47,10 +50,20 @@ public class CardServiceImpl implements ICardService{
         CardSecurityUtils.decrypt(cardDto);
         CardSecurityUtils.mask(cardDto);
 
+        NotificationEvent event = new NotificationEvent(
+                user.getEmail(),
+                user.getFirstname(),
+                user.getLastname(),
+                EventType.CARD_CREATED,
+                "Card with number " + cardDto.getCardNumber() + " was created successfully"
+        );
+
+        kafkaProducerService.sendMessage(event);
+
         return cardDto;
     }
 
-    @PostAuthorize("returnObject.userId == authentication.principal.id")
+    @PostAuthorize("returnObject.userId == authentication.principal.id or hasAuthority('ADMIN')")
     @Override
     public CardDto findById(Long id) {
         Card card = cardRepository.findById(id)
@@ -124,6 +137,20 @@ public class CardServiceImpl implements ICardService{
         toCard.setBalance(toCard.getBalance().add(transferRequest.amount()));
         fromCard.setBalance(fromCard.getBalance().subtract(transferRequest.amount()));
 
-        cardRepository.saveAll(List.of(fromCard, toCard));
+        CardDto toCardDto = cardMapper.toCardDto(toCard);
+
+        CardSecurityUtils.decrypt(toCardDto);
+        CardSecurityUtils.mask(toCardDto);
+
+        NotificationEvent event = new NotificationEvent(
+                fromCard.getUser().getEmail(),
+                fromCard.getUser().getFirstname(),
+                fromCard.getUser().getLastname(),
+                EventType.TRANSFER_COMPLETED,
+                String.format("The money transfer was completed successfully.\n" +
+                        "%.2f has been transferred to card %s. Balance %.2f.", transferRequest.amount(), toCardDto.getCardNumber(), toCardDto.getBalance())
+        );
+
+        kafkaProducerService.sendMessage(event);
     }
 }

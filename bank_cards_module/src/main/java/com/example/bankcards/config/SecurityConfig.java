@@ -39,18 +39,16 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/users").hasAuthority("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/api/cards/transfer").hasAnyAuthority("USER", "ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/api/users/**", "/api/cards/**").hasAuthority("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/api/cards/**").hasAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/cards/**").hasAnyAuthority("ADMIN", "USER")
+                                .requestMatchers(HttpMethod.GET, "/api/cards/**").hasAnyAuthority("ADMIN", "USER")
                                 .requestMatchers(HttpMethod.PUT, "/api/users/**", "/api/cards/**").hasAuthority("ADMIN")
+                                .requestMatchers("/api/admin/cards/requests/**").hasAuthority("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-//                .userDetailsService(userDetailsService)
-//                .formLogin(Customizer.withDefaults());
-//                .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
