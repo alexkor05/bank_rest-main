@@ -5,12 +5,14 @@ import com.example.bankcards.entity.*;
 import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.exception.InsufficientFundsException;
 import com.example.bankcards.exception.UserNotOwnerProvidedCardException;
+import com.example.bankcards.mapper.CardListMapper;
 import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.UserPrincipal;
 import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -18,7 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import java.time.LocalDate;
+import java.util.List;
 
 
 @Service
@@ -26,12 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CardServiceImpl implements ICardService{
 
-
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final KafkaProducerService kafkaProducerService;
     private final CardMapper cardMapper;
-
 
     @Override
     @Transactional
@@ -152,5 +153,13 @@ public class CardServiceImpl implements ICardService{
         );
 
         kafkaProducerService.sendMessage(event);
+    }
+
+    @Scheduled(cron = "0 1 0 * * *", zone = "Europe/Moscow")
+    @Transactional
+    public void expireOldCards(){
+        List<Card> cards = cardRepository.findAllByExpiryDateBeforeAndStatusNot(LocalDate.now(), Status.EXPIRED);
+        cards.forEach(c -> c.setStatus(Status.EXPIRED));
+        cardRepository.saveAll(cards);
     }
 }
