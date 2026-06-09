@@ -8,6 +8,9 @@ import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,7 @@ public class UserServiceImpl implements IUserService{
     private final KafkaProducerService kafkaProducerService;
 
 
+    @Cacheable(value = "users", key = "#id")
     @PreAuthorize("#id==authentication.principal.id or hasAuthority('ADMIN')")
     public UserDto findById(Long id) {
         User user = userRepository.findById(id)
@@ -36,8 +40,10 @@ public class UserServiceImpl implements IUserService{
 
         maskCards(userDto);
 
+
         return userDto;
     }
+
 
     @Transactional
     public UserDto createUser(CreateUserRequest createUserRequest) {
@@ -61,7 +67,9 @@ public class UserServiceImpl implements IUserService{
         return userDto;
     }
 
+
     @Override
+    @CachePut(value = "users", key = "#id")
     @Transactional
     public UserDto updateUser(Long id, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findById(id)
@@ -76,10 +84,13 @@ public class UserServiceImpl implements IUserService{
         UserDto userDto = userMapper.toUserDto(savedUser);
 
         maskCards(userDto);
+
+
         return userDto;
     }
 
     @Override
+    @CacheEvict(value = "users", key = "#id")
     @Transactional
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)

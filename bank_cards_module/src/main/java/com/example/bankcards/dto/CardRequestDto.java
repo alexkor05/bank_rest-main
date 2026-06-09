@@ -8,6 +8,7 @@ import com.example.bankcards.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public record CardRequestDto(
@@ -17,5 +18,5 @@ public record CardRequestDto(
         RequestType type,
         RequestStatus status,
         LocalDateTime createdAt
-        ) {
+        ) implements Serializable {
 }

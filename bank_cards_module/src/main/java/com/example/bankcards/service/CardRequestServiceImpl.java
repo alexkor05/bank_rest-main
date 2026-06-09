@@ -11,6 +11,7 @@ import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardRequestRepository;
 import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CardRequestServiceImpl implements ICardRequestService {
     private final CardRequestRepository cardRequestRepository;
@@ -52,6 +54,7 @@ public class CardRequestServiceImpl implements ICardRequestService {
         return cardRequestMapper.toCardRequestDto(savedCardRequest);
     }
 
+    @Cacheable(value = "cardRequests", key = "#id")
     public List<CardRequestDto> findRequestsByUserId(Long id){
         List<CardRequest> cardRequestList = cardRequestRepository.findByUserId(id);
         return cardRequestMapper.toCardRequestDtoList(cardRequestList);

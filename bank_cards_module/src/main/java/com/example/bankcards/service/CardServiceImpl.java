@@ -12,6 +12,9 @@ import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.UserPrincipal;
 import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
@@ -64,6 +67,7 @@ public class CardServiceImpl implements ICardService{
         return cardDto;
     }
 
+    @Cacheable(value = "cards", key = "#id")
     @PostAuthorize("returnObject.userId == authentication.principal.id or hasAuthority('ADMIN')")
     @Override
     public CardDto findById(Long id) {
@@ -81,6 +85,7 @@ public class CardServiceImpl implements ICardService{
 
     @Override
     @Transactional
+    @CachePut(value = "cards", key = "#id")
     public CardDto updateCard(Long id, UpdateCardRequest updateCardRequest) {
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Card with ID=" + id + " not found"));
@@ -102,6 +107,7 @@ public class CardServiceImpl implements ICardService{
 
     @Override
     @Transactional
+    @CacheEvict(value = "cards", key = "#id")
     public void deleteCard(Long id) {
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Card with ID=" + id + " not found"));
