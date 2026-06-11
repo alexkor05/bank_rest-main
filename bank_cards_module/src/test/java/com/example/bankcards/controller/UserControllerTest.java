@@ -1,5 +1,6 @@
 package com.example.bankcards.controller;
 
+import com.example.bankcards.IntegrationTestBase;
 import lombok.RequiredArgsConstructor;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -15,15 +16,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Sql({
-        "classpath:sql/data.sql"
-})
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class UserControllerTest {
+class UserControllerTest extends IntegrationTestBase {
 
     private final MockMvc mockMvc;
 

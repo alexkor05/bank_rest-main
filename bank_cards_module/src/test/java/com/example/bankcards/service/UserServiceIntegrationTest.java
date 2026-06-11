@@ -1,5 +1,6 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.IntegrationTestBase;
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.entity.Role;
@@ -21,15 +22,9 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@SqlGroup({
-        @Sql(scripts = "classpath:sql/clean.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
-        @Sql(scripts = "classpath:sql/data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-})
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-public class UserServiceIntegrationTest {
+public class UserServiceIntegrationTest extends IntegrationTestBase {
 
     private final UserServiceImpl userService;
 
