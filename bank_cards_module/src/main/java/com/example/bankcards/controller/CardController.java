@@ -8,6 +8,7 @@ import com.example.bankcards.dto.UpdateCardRequest;
 
 
 import com.example.bankcards.service.CardServiceImpl;
+import com.example.bankcards.service.ICardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Cards")
 public class CardController {
-    private final CardServiceImpl cardService;
+    private final ICardService cardService;
 
 
     @Operation(operationId = "createCard", summary = "Create card", description = "Create card")

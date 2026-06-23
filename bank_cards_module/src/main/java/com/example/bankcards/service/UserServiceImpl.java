@@ -40,7 +40,6 @@ public class UserServiceImpl implements IUserService{
 
         maskCards(userDto);
 
-        System.out.println("method: findById");
 
         return userDto;
     }
