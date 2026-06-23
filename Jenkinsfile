@@ -6,13 +6,14 @@ pipeline {
     }
 
     triggers {
-        pollSCM('* * * * *')
+        githubPush()
+
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master'
+                git branch: 'master',
                     url: 'https://github.com/alexkor05/bank_rest-main.git'
             }
         }
