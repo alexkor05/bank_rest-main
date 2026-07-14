@@ -6,6 +6,7 @@ import com.example.bankcards.dto.UpdateUserRequest;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.service.IUserService;
 import com.example.bankcards.service.UserServiceImpl;
+import com.example.bankcards.service.UserTransaction;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,6 +29,15 @@ import java.util.List;
 @Tag(name = "Users", description = "Customer profile and role management.")
 public class UserController {
     private final IUserService userService;
+    private final UserTransaction userTransaction;
+
+    @GetMapping("/test/{id}")
+    public ResponseEntity<UserDto> getById(@PathVariable Long id){
+        return ResponseEntity.ok().body(userTransaction.getUserById(id));
+    }
+
+
+
 
     @Operation(operationId = "findUser", summary = "Find user by Id", description = "Find user by id")
     @ApiResponses({

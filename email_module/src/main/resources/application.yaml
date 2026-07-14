@@ -19,21 +19,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-#
-#  mail:
-#    host: smtp-relay.brevo.com
-#    port: 587
-#    username: ad0229001@smtp-brevo.com
-#    password: bskdzKgApTCbEwY
-#    protocol: smtp
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
-#            required: true
-#    debug: true  # для отладки
+
 
   mail:
     host: smtp.mail.ru

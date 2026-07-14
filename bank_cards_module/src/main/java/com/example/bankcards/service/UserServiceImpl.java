@@ -40,7 +40,6 @@ public class UserServiceImpl implements IUserService{
 
         maskCards(userDto);
 
-
         return userDto;
     }
 

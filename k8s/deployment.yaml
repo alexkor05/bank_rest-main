@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-cards-module
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bank-cards-module
+  template:
+    metadata:
+      labels:
+        app: bank-cards-module
+    spec:
+      containers:
+        - name: bank-cards-module
+          image: bank-cards-module:1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://host.docker.internal:5433/bank_cards"
+            - name: REDIS_URL
+              value: "host.docker.internal"
+          ports:
+            - containerPort: 8080
