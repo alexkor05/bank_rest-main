@@ -1,6 +1,8 @@
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
+.env
+
 ### STS ###
 .apt_generated
 .classpath
@@ -160,4 +162,3 @@ README.html
 *.iml
 .idea
 .exercism
-.env
