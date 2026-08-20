@@ -95,6 +95,7 @@
             <scope>runtime</scope>
         </dependency>
 
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
@@ -106,6 +107,15 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-aop -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>3.5.16</version>
+            <scope>compile</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>

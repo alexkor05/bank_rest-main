@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: Spring Logs
+    uid: spring-logs
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    isDefault: true
+
+    jsonData:
+      index: spring-logs
+      timeField: "@timestamp"
+      logMessageField: message
+      logLevelField: log.level

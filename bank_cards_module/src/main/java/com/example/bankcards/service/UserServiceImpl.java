@@ -61,6 +61,7 @@ public class UserServiceImpl implements IUserService{
                 "Your registration has been successfully confirmed."
         );
 
+
         kafkaProducerService.sendMessage(event);
 
         return userDto;

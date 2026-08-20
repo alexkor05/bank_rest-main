@@ -1,0 +1,22 @@
+filebeat.inputs:
+  - type: filestream
+    id: spring-boot-logs
+    enabled: true
+
+    paths:
+      - /logs/*.log
+
+    parsers:
+      - ndjson:
+          target: ""
+          overwrite_keys: true
+          add_error_key: true
+
+output.elasticsearch:
+  hosts:
+    - "http://elasticsearch:9200"
+
+  index: "spring-logs"
+
+setup.ilm.enabled: false
+setup.template.enabled: false

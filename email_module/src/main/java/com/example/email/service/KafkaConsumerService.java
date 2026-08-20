@@ -19,14 +19,5 @@ public class KafkaConsumerService {
 
         emailService.sendEmail(event);
 
-
-//        System.out.println(pas);
-//        System.out.println(event.email());
-//        System.out.println(event.firstname());
-//        System.out.println(event.lastname());
-//        System.out.println(event.eventType().getDescription());
-//        System.out.println(event.message());
-
-
     }
 }
