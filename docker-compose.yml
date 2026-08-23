@@ -73,7 +73,8 @@ services:
       - elasticsearch
     volumes:
       - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-      - ./logs:/logs:ro
+      - ./logs:/logs
+#      - ./logs:/logs:ro
 
   grafana:
     image: grafana/grafana:13.1.3

@@ -6,12 +6,6 @@ filebeat.inputs:
     paths:
       - /logs/*.log
 
-    parsers:
-      - ndjson:
-          target: ""
-          overwrite_keys: true
-          add_error_key: true
-
 output.elasticsearch:
   hosts:
     - "http://elasticsearch:9200"
