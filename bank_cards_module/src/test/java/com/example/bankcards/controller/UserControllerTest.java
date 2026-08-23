@@ -53,4 +53,40 @@ class UserControllerTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.cards[1].userId").value(1));
 
     }
+
+
+    @Test
+    @WithUserDetails("js_admin@gmail.com")
+    void shouldReturnPagedUsers() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", "0")
+                        .param("size", "2")
+                        .param("sort", "id,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.totalPages").value(3))
+                .andExpect(jsonPath("$.totalElements").value(5))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.number").value(0))
+
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].firstname").value("Jonh"))
+                .andExpect(jsonPath("$.content[0].lastname").value("Smith"))
+                .andExpect(jsonPath("$.content[0].email").value("js1@gmail.com"))
+                .andExpect(jsonPath("$.content[0].cards[0].cardNumber").value("**** **** **** 1227"))
+                .andExpect(jsonPath("$.content[0].cards[1].cardNumber").value("**** **** **** 3155"))
+
+
+                .andExpect(jsonPath("$.content[1].id").value(2))
+                .andExpect(jsonPath("$.content[1].firstname").value("Sam"))
+                .andExpect(jsonPath("$.content[1].lastname").value("Smith"))
+                .andExpect(jsonPath("$.content[1].email").value("js_admin@gmail.com"))
+                .andExpect(jsonPath("$.content[1].cards", Matchers.hasSize(0)));
+
+
+
+
+    }
 }
