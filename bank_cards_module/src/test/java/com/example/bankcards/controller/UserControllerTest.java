@@ -53,4 +53,21 @@ class UserControllerTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.cards[1].userId").value(1));
 
     }
+
+
+    @Test
+    @WithUserDetails("js_admin@gmail.com")
+    void shouldReturnPagedUsers() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", "0")
+                        .param("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalPages").value(3))
+                .andExpect(jsonPath("$.totalElements").value(5))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.pageable.pageSize").value(2))
+                .andExpect(jsonPath("$.pageable.pageNumber").value(0));
+
+    }
 }

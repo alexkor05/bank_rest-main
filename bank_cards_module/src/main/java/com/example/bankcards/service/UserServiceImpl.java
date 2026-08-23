@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -102,17 +104,23 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
-    public List<UserDto> findAll() {
-        List<User> users = userRepository.findAll();
-
-        List<UserDto> userDtoList = userListMapper.toUserDtoList(users);
-
-        for (UserDto userDto : userDtoList) {
-            maskCards(userDto);
-        }
-
-
-        return userDtoList;
+    public Page<UserDto> findAll(Pageable pageable) {
+//        List<User> users = userRepository.findAll();
+//
+//        List<UserDto> userDtoList = userListMapper.toUserDtoList(users);
+//
+//        for (UserDto userDto : userDtoList) {
+//            maskCards(userDto);
+//        }
+//
+//
+//        return userDtoList;
+        return userRepository.findAll(pageable)
+                .map(user -> {
+                    UserDto userDto = userMapper.toUserDto(user);
+                    maskCards(userDto);
+                    return userDto;
+                });
     }
 
 
