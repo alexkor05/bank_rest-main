@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -105,16 +104,6 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     public Page<UserDto> findAll(Pageable pageable) {
-//        List<User> users = userRepository.findAll();
-//
-//        List<UserDto> userDtoList = userListMapper.toUserDtoList(users);
-//
-//        for (UserDto userDto : userDtoList) {
-//            maskCards(userDto);
-//        }
-//
-//
-//        return userDtoList;
         return userRepository.findAll(pageable)
                 .map(user -> {
                     UserDto userDto = userMapper.toUserDto(user);
