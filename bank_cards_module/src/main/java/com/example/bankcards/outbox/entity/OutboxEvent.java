@@ -2,9 +2,7 @@ package com.example.bankcards.outbox.entity;
 
 import com.example.bankcards.dto.EventType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -12,9 +10,11 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Entity
 @Table(name = "outbox_event")
 public class OutboxEvent {
@@ -22,7 +22,7 @@ public class OutboxEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "event_id", nullable = false)
+    @Column(name = "event_id", nullable = false, unique = true)
     private UUID eventId;
 
     @Enumerated(EnumType.STRING)
@@ -50,8 +50,8 @@ public class OutboxEvent {
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
-    @Column(name = "retry_count")
-    private Integer retryCount;
+    @Column(name = "retry_count", nullable = false)
+    private Integer retryCount = 0;
 
     @Column(name = "last_error")
     private String lastError;

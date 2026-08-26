@@ -5,5 +5,5 @@ public record CardCreatedPayload (
         Long userId,
         String maskedCardNumber
 
-){
+) implements EventPayload{
 }

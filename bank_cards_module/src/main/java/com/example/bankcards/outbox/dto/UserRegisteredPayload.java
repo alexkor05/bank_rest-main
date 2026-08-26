@@ -5,5 +5,5 @@ public record UserRegisteredPayload(
         String email,
         String firstName,
         String lastName
-) {
+) implements EventPayload {
 }

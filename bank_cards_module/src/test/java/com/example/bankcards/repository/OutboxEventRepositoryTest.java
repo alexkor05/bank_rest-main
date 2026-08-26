@@ -8,15 +8,10 @@ import com.example.bankcards.outbox.entity.OutboxEvent;
 import com.example.bankcards.outbox.repository.OutboxEventRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
-import org.assertj.core.api.Assertions;
-import org.hibernate.annotations.processing.Exclude;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import org.springframework.boot.jpa.test.autoconfigure.AutoConfigureTestEntityManager;
-import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
-import org.springframework.test.context.TestConstructor;
+
 
 import java.time.LocalDateTime;
 import java.util.UUID;

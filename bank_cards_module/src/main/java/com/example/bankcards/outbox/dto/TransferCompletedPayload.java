@@ -6,5 +6,5 @@ public record TransferCompletedPayload(
         Long fromCardId,
         Long toCardId,
         BigDecimal amount
-) {
+) implements EventPayload {
 }

@@ -2,15 +2,13 @@ package com.example.bankcards.outbox.service;
 
 import com.example.bankcards.dto.EventType;
 
+import com.example.bankcards.outbox.dto.EventPayload;
 import com.example.bankcards.outbox.entity.AggregateType;
 import com.example.bankcards.outbox.entity.EventStatus;
 import com.example.bankcards.outbox.entity.OutboxEvent;
 import com.example.bankcards.outbox.repository.OutboxEventRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 
@@ -24,9 +22,8 @@ public class OutboxServiceImpl implements OutboxService{
     private final ObjectMapper objectMapper;
     private final OutboxEventRepository outboxRepository;
 
-    @Transactional
     @Override
-    public void saveEvent(AggregateType aggregateType, Long aggregateId, EventType eventType, Object payload) {
+    public void saveEvent(AggregateType aggregateType, Long aggregateId, EventType eventType, EventPayload payload) {
 
             String json = objectMapper.writeValueAsString(payload);
             OutboxEvent outboxEvent = new OutboxEvent();

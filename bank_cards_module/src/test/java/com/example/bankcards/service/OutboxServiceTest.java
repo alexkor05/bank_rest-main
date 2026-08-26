@@ -6,7 +6,6 @@ import com.example.bankcards.outbox.entity.AggregateType;
 import com.example.bankcards.outbox.entity.EventStatus;
 import com.example.bankcards.outbox.entity.OutboxEvent;
 import com.example.bankcards.outbox.repository.OutboxEventRepository;
-import com.example.bankcards.outbox.service.OutboxService;
 import com.example.bankcards.outbox.service.OutboxServiceImpl;
 
 
@@ -35,7 +34,7 @@ public class OutboxServiceTest {
     private OutboxServiceImpl outboxService;
 
     @Test
-    void shouldSaveUserRegisteredEvent() throws Exception {
+    void shouldSaveUserRegisteredEvent(){
         UserRegisteredPayload payload = new UserRegisteredPayload(
             1L,
             "alex@gmail.com",
