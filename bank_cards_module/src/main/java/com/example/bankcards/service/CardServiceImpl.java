@@ -54,6 +54,7 @@ public class CardServiceImpl implements ICardService{
         CardSecurityUtils.decrypt(cardDto);
         CardSecurityUtils.mask(cardDto);
 
+
         NotificationEvent event = new NotificationEvent(
                 user.getEmail(),
                 user.getFirstname(),
