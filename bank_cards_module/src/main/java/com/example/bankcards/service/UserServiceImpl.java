@@ -3,8 +3,11 @@ package com.example.bankcards.service;
 import com.example.bankcards.dto.*;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.EntityNotFoundException;
-import com.example.bankcards.mapper.UserListMapper;
 import com.example.bankcards.mapper.UserMapper;
+import com.example.bankcards.outbox.dto.UserRegisteredPayload;
+import com.example.bankcards.outbox.entity.AggregateType;
+import com.example.bankcards.outbox.service.OutboxService;
+import com.example.bankcards.outbox.service.OutboxServiceImpl;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,10 +32,9 @@ public class UserServiceImpl implements IUserService{
     private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserMapper userMapper;
-    private final UserListMapper userListMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final KafkaProducerService kafkaProducerService;
+    private final OutboxService outboxService;
 
 
     @Cacheable(value = "users", key = "#id")
@@ -57,17 +60,18 @@ public class UserServiceImpl implements IUserService{
 
         maskCards(userDto);
 
-        NotificationEvent event = new NotificationEvent(
-                userDto.email(),
-                userDto.firstname(),
-                userDto.lastname(),
-                EventType.USER_REGISTERED,
-                "Your registration has been successfully confirmed."
+        UserRegisteredPayload payload = new UserRegisteredPayload(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstname(),
+                user.getLastname()
         );
-
-
-        kafkaProducerService.sendMessage(event);
-
+        outboxService.saveEvent(
+                AggregateType.USER,
+                user.getId(),
+                EventType.USER_REGISTERED,
+                payload
+        );
         return userDto;
     }
 

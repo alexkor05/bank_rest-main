@@ -19,11 +19,9 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +34,7 @@ public class UserServiceUnitTest {
     private UserListMapper userListMapper;
     @Mock
     private UserRepository userRepository;
-//    private PasswordEncoder passwordEncoder;
+
 
     @InjectMocks
     private UserServiceImpl userService;
