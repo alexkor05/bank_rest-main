@@ -43,4 +43,4 @@ outbox:
 app:
   kafka:
     topics:
-      bankEventsTopic: bank-events
+      bankEvents: bank-events
