@@ -141,7 +141,7 @@ public class OutboxPublisherTest {
 
         // then
         assertThat(event.getEventStatus())
-                .isEqualTo(EventStatus.NEW);
+                .isEqualTo(EventStatus.FAILED);
 
         assertThat(event.getPublishedAt())
                 .isNull();
@@ -157,6 +157,44 @@ public class OutboxPublisherTest {
                         eq("bank-events"),
                         any(BankEvent.class)
                 );
+    }
+
+    @Test
+    void shouldMarkEventAsFailedWhenMaxRetryAttemptsReached() throws Exception {
+
+        // given
+        OutboxEvent event = createNewEvent();
+        event.setRetryCount(2);
+
+        JsonNode payload = mock(JsonNode.class);
+
+        when(eventRepository.findNewEventsForPublishing(100))
+                .thenReturn(List.of(event));
+
+        when(objectMapper.readTree(event.getPayload()))
+                .thenReturn(payload);
+
+        CompletableFuture<SendResult<String, Object>> failedFuture =
+                new CompletableFuture<>();
+
+        failedFuture.completeExceptionally(
+                new RuntimeException("Kafka is unavailable")
+        );
+
+        when(kafkaTemplate.send(
+                eq("bank-events"),
+                any(BankEvent.class)
+        )).thenReturn(failedFuture);
+
+        // when
+        outboxPublisher.publish();
+
+        // then
+        assertThat(event.getRetryCount())
+                .isEqualTo(3);
+
+        assertThat(event.getEventStatus())
+                .isEqualTo(EventStatus.FAILED);
     }
 
     private OutboxEvent createNewEvent() {
