@@ -36,3 +36,11 @@ jwt:
   expiration:
     access: 900000
     refresh: 604800000
+
+outbox:
+  batchSize: 100
+
+app:
+  kafka:
+    topics:
+      bankEventsTopic: bank-events
