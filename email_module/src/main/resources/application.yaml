@@ -2,7 +2,6 @@ server:
   port: 8081
 
 spring:
-
   datasource:
     url: jdbc:postgresql://localhost:5433/bank_cards
     username: postgres
@@ -11,6 +10,8 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
+    database-change-log-table: email_databasechangelog
+    database-change-log-lock-table: email_databasechangeloglock
 
   jpa:
     hibernate:
@@ -39,3 +40,7 @@ spring:
 
 
 
+app:
+  kafka:
+    topics:
+      bankEvents: bank-events

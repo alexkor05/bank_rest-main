@@ -1,9 +1,8 @@
 package com.example.email.service;
 
 
-import com.example.email.dto.NotificationEvent;
+import com.example.email.dto.BankEvent;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +13,11 @@ public class KafkaConsumerService {
 
     private final EmailService emailService;
 
-    @KafkaListener(topics = "email-notification-topic", groupId = "email-service-group")
-    public void listener(NotificationEvent event) {
 
-        emailService.sendEmail(event);
+    @KafkaListener(topics = "${app.kafka.topics.bankEvents}", groupId = "email-service-group")
+    public void listener(BankEvent event) {
+
+        emailService.process(event);
 
     }
 }

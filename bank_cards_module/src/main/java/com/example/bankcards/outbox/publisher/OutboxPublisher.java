@@ -30,6 +30,9 @@ public class OutboxPublisher {
     @Value("${app.kafka.topics.bankEvents}")
     private String bankEventsTopic;
 
+    @Value("${outbox.maxRetryAttempts}")
+    private int maxRetryAttempts;
+
 
     @Transactional
     @Scheduled(cron = "*/10 * * * * *")
@@ -58,12 +61,22 @@ public class OutboxPublisher {
             event.setEventStatus(EventStatus.PUBLISHED);
             event.setPublishedAt(LocalDateTime.now());
         } catch (Exception e) {
-            event.setRetryCount(event.getRetryCount() + 1);
-            event.setLastError(e.getMessage());
-            //TODO: log.warn()
+            handlePublishingError(event, e);
+
+
+
         }
 
         eventRepository.save(event);
+    }
+
+    private void handlePublishingError(OutboxEvent event, Exception e) {
+        event.setRetryCount(event.getRetryCount() + 1);
+        event.setLastError(e.getMessage());
+
+        if(event.getRetryCount() >= maxRetryAttempts) {
+            event.setEventStatus(EventStatus.FAILED);
+        }
     }
 
 }

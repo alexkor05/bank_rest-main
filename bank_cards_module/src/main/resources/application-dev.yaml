@@ -39,6 +39,7 @@ jwt:
 
 outbox:
   batchSize: 100
+  maxRetryAttempts: 3
 
 app:
   kafka:

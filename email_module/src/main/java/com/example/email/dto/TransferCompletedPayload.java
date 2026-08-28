@@ -1,4 +1,4 @@
-package com.example.bankcards.outbox.dto;
+package com.example.email.dto;
 
 import java.math.BigDecimal;
 
