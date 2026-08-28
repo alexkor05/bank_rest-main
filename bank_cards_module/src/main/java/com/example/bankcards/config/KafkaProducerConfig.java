@@ -1,7 +1,6 @@
 package com.example.bankcards.config;
 
-import com.example.bankcards.dto.NotificationEvent;
-import com.example.bankcards.dto.UserDto;
+
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;

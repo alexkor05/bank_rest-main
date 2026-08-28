@@ -7,7 +7,6 @@ import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.outbox.dto.UserRegisteredPayload;
 import com.example.bankcards.outbox.entity.AggregateType;
 import com.example.bankcards.outbox.service.OutboxService;
-import com.example.bankcards.outbox.service.OutboxServiceImpl;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
