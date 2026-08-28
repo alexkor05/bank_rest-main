@@ -7,6 +7,11 @@ import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.exception.RequestNotFoundException;
 import com.example.bankcards.mapper.CardMapper;
 import com.example.bankcards.mapper.CardRequestMapper;
+import com.example.bankcards.outbox.dto.CardActivatedPayload;
+import com.example.bankcards.outbox.dto.CardBlockedPayload;
+import com.example.bankcards.outbox.dto.EventPayload;
+import com.example.bankcards.outbox.entity.AggregateType;
+import com.example.bankcards.outbox.service.OutboxService;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardRequestRepository;
 import com.example.bankcards.util.CardSecurityUtils;
@@ -25,8 +30,9 @@ public class CardRequestServiceImpl implements ICardRequestService {
     private final CardRequestRepository cardRequestRepository;
     private final CardRepository cardRepository;
     private final CardRequestMapper cardRequestMapper;
-    private final KafkaProducerService kafkaProducerService;
     private final CardMapper cardMapper;
+    private final OutboxService outboxService;
+
 
     @Transactional
     public CardRequestDto createRequest(CardRequestInfo cardRequestInfo) {
@@ -78,30 +84,42 @@ public class CardRequestServiceImpl implements ICardRequestService {
 
         if(processRequestDto.adminAction() == AdminAction.APPROVE) {
             Card card = cardRequest.getCard();
-            String eventMessage = "";
             CardDto cardDto = cardMapper.toCardDto(card);
             CardSecurityUtils.decrypt(cardDto);
             CardSecurityUtils.mask(cardDto);
 
+            EventType eventType;
+            EventPayload payload;
+
             if(cardRequest.getType() == RequestType.BLOCK) {
                 card.setStatus(Status.BLOCKED);
-                eventMessage = "Card " + cardDto.getCardNumber() + " was blocked";
+                eventType = EventType.CARD_BLOCKED;
+                payload = new CardBlockedPayload(
+                        card.getId(),
+                        card.getUser().getId(),
+                        cardRequest.getUser().getEmail(),
+                        cardDto.getCardNumber()
+                );
             } else {
                 card.setStatus(Status.ACTIVE);
-                eventMessage = "Card " + cardDto.getCardNumber() + " was activated";
+                eventType = EventType.CARD_ACTIVATED;
+                payload = new CardActivatedPayload(
+                        card.getId(),
+                        card.getUser().getId(),
+                        cardRequest.getUser().getEmail(),
+                        cardDto.getCardNumber()
+                );
             }
 
             cardRepository.save(card);
             cardRequest.setStatus(RequestStatus.APPROVED);
 
-            NotificationEvent event = new NotificationEvent(
-                    card.getUser().getEmail(),
-                    card.getUser().getFirstname(),
-                    card.getUser().getLastname(),
-                    cardRequest.getType() == RequestType.BLOCK ? EventType.CARD_BLOCKED : EventType.CARD_ACTIVATED,
-                    eventMessage
+            outboxService.saveEvent(
+                    AggregateType.CARD,
+                    card.getId(),
+                    eventType,
+                    payload
             );
-            kafkaProducerService.sendMessage(event);
 
         } else {
             cardRequest.setStatus(RequestStatus.REJECTED);

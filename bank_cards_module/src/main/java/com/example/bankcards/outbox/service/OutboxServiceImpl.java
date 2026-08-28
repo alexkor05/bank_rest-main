@@ -26,6 +26,7 @@ public class OutboxServiceImpl implements OutboxService{
     public void saveEvent(AggregateType aggregateType, Long aggregateId, EventType eventType, EventPayload payload) {
 
             String json = objectMapper.writeValueAsString(payload);
+
             OutboxEvent outboxEvent = new OutboxEvent();
             outboxEvent.setAggregateId(aggregateId);
             outboxEvent.setEventId(UUID.randomUUID());
@@ -34,6 +35,7 @@ public class OutboxServiceImpl implements OutboxService{
             outboxEvent.setEventStatus(EventStatus.NEW);
             outboxEvent.setPayload(json);
             outboxEvent.setCreatedAt(LocalDateTime.now());
+
             outboxRepository.save(outboxEvent);
 
     }

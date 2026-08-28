@@ -56,6 +56,11 @@ public class OutboxPublisherTest {
                 "bankEventsTopic",
                 "bank-events"
         );
+        ReflectionTestUtils.setField(
+                outboxPublisher,
+                "maxRetryAttempts",
+                3
+        );
     }
 
     @Test
@@ -141,7 +146,7 @@ public class OutboxPublisherTest {
 
         // then
         assertThat(event.getEventStatus())
-                .isEqualTo(EventStatus.FAILED);
+                .isEqualTo(EventStatus.NEW);
 
         assertThat(event.getPublishedAt())
                 .isNull();

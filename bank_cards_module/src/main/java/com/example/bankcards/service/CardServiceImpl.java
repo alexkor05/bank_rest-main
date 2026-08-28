@@ -5,8 +5,11 @@ import com.example.bankcards.entity.*;
 import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.exception.InsufficientFundsException;
 import com.example.bankcards.exception.UserNotOwnerProvidedCardException;
-import com.example.bankcards.mapper.CardListMapper;
 import com.example.bankcards.mapper.CardMapper;
+import com.example.bankcards.outbox.dto.CardCreatedPayload;
+import com.example.bankcards.outbox.dto.TransferCompletedPayload;
+import com.example.bankcards.outbox.entity.AggregateType;
+import com.example.bankcards.outbox.service.OutboxService;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.UserPrincipal;
@@ -18,7 +21,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +36,7 @@ public class CardServiceImpl implements ICardService{
 
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
-    private final KafkaProducerService kafkaProducerService;
+    private final OutboxService outboxService;
     private final CardMapper cardMapper;
 
     @Override
@@ -54,16 +56,19 @@ public class CardServiceImpl implements ICardService{
         CardSecurityUtils.decrypt(cardDto);
         CardSecurityUtils.mask(cardDto);
 
-        NotificationEvent event = new NotificationEvent(
+        CardCreatedPayload payload = new CardCreatedPayload(
+                createdCard.getId(),
+                user.getId(),
                 user.getEmail(),
-                user.getFirstname(),
-                user.getLastname(),
-                EventType.CARD_CREATED,
-                "Card with number " + cardDto.getCardNumber() + " was created successfully"
+                cardDto.getCardNumber()
         );
 
-        kafkaProducerService.sendMessage(event);
-
+        outboxService.saveEvent(
+                AggregateType.CARD,
+                createdCard.getId(),
+                EventType.CARD_CREATED,
+                payload
+        );
         return cardDto;
     }
 
@@ -145,20 +150,30 @@ public class CardServiceImpl implements ICardService{
         fromCard.setBalance(fromCard.getBalance().subtract(transferRequest.amount()));
 
         CardDto toCardDto = cardMapper.toCardDto(toCard);
-
         CardSecurityUtils.decrypt(toCardDto);
         CardSecurityUtils.mask(toCardDto);
 
-        NotificationEvent event = new NotificationEvent(
-                fromCard.getUser().getEmail(),
-                fromCard.getUser().getFirstname(),
-                fromCard.getUser().getLastname(),
-                EventType.TRANSFER_COMPLETED,
-                String.format("The money transfer was completed successfully.\n" +
-                        "%.2f has been transferred to card %s. Balance %.2f.", transferRequest.amount(), toCardDto.getCardNumber(), toCardDto.getBalance())
+        CardDto fromCardDto = cardMapper.toCardDto(fromCard);
+        CardSecurityUtils.decrypt(fromCardDto);
+        CardSecurityUtils.mask(fromCardDto);
+
+
+        TransferCompletedPayload payload = new TransferCompletedPayload(
+                userPrincipal.getId(),
+                fromCard.getId(),
+                fromCardDto.getCardNumber(),
+                toCard.getId(),
+                toCardDto.getCardNumber(),
+                userPrincipal.getUsername(),
+                transferRequest.amount()
         );
 
-        kafkaProducerService.sendMessage(event);
+        outboxService.saveEvent(
+                AggregateType.CARD,
+                fromCard.getId(),
+                EventType.TRANSFER_COMPLETED,
+                payload
+        );
     }
 
     @Scheduled(cron = "0 1 0 * * *", zone = "Europe/Moscow")

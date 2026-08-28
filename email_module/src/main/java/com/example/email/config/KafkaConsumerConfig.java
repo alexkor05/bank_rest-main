@@ -2,7 +2,7 @@ package com.example.email.config;
 
 
 
-import com.example.email.dto.NotificationEvent;
+import com.example.email.dto.BankEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class KafkaConsumerConfig {
 
     @Bean
-    public ConsumerFactory<String, NotificationEvent> kafkaConsumer() {
+    public ConsumerFactory<String, BankEvent> kafkaConsumer() {
         Map<String, Object> kafkaConfiguration = new HashMap<>();
         kafkaConfiguration.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         kafkaConfiguration.put(ConsumerConfig.GROUP_ID_CONFIG, "email-service-group");
@@ -30,7 +30,7 @@ public class KafkaConsumerConfig {
         kafkaConfiguration.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
         kafkaConfiguration.put(JacksonJsonDeserializer.TRUSTED_PACKAGES, "*");
 
-        kafkaConfiguration.put(JacksonJsonDeserializer.VALUE_DEFAULT_TYPE, NotificationEvent.class);
+        kafkaConfiguration.put(JacksonJsonDeserializer.VALUE_DEFAULT_TYPE, BankEvent.class);
         kafkaConfiguration.put(JacksonJsonDeserializer.USE_TYPE_INFO_HEADERS, false);
 
 
@@ -38,9 +38,9 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, NotificationEvent> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, BankEvent> kafkaListenerContainerFactory() {
 
-        ConcurrentKafkaListenerContainerFactory<String, NotificationEvent> concurrentKafkaListenerContainerFactory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, BankEvent> concurrentKafkaListenerContainerFactory = new ConcurrentKafkaListenerContainerFactory<>();
 
         concurrentKafkaListenerContainerFactory.setConsumerFactory(kafkaConsumer());
 
