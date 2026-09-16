@@ -1,4 +1,5 @@
 spring:
+
   datasource:
 #    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/bank_cards}
     url: ${SPRING_DATASOURCE_URL}
@@ -22,6 +23,9 @@ spring:
       host: ${REDIS_URL:localhost}
       port: 6379
 
+
+
+
 logging:
   file:
     name: ./logs/application.log
@@ -32,7 +36,7 @@ logging:
 
 
 jwt:
-  secret: "SamsungSamsungSamsungSamsungSamsung"
+  secret: ${JWT_SECRET}
   expiration:
     access: 900000
     refresh: 604800000
