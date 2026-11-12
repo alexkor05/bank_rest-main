@@ -2,7 +2,6 @@ package com.example.bankcards.dto;
 
 import com.example.bankcards.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;

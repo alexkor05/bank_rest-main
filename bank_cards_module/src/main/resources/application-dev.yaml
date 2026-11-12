@@ -49,3 +49,5 @@ app:
   kafka:
     topics:
       bankEvents: bank-events
+    bootstrap-servers: "localhost:9092"
+

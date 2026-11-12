@@ -1,6 +1,5 @@
 package com.example.bankcards.exception;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -42,6 +41,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail userNotOwnerProvidedCardExceptionHandler(UserNotOwnerProvidedCardException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
         problemDetail.setTitle("Bad request");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ProblemDetail insufficientFundsExceptionHandler(InsufficientFundsException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problemDetail.setTitle("Insufficient Funds");
         return problemDetail;
     }
 

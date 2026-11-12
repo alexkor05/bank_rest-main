@@ -7,7 +7,6 @@ import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.Status;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.EntityNotFoundException;
-import com.example.bankcards.mapper.UserListMapper;
 import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.util.CardSecurityUtils;
@@ -30,8 +29,7 @@ public class UserServiceUnitTest {
 
     @Mock
     private UserMapper userMapper;
-    @Mock
-    private UserListMapper userListMapper;
+
     @Mock
     private UserRepository userRepository;
 

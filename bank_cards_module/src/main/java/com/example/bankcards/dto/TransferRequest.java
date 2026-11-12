@@ -3,6 +3,7 @@ package com.example.bankcards.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 @Schema(description = "Transfer data")
@@ -17,6 +18,7 @@ public record TransferRequest (
 
         @Schema(description = "Transfer amount", example = "5000")
         @NotNull
+        @Positive
         BigDecimal amount,
 
         @Schema(description = "User id", example = "101")
