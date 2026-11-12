@@ -4,6 +4,7 @@ import com.example.bankcards.dto.CardRequestDto;
 import com.example.bankcards.dto.CardRequestInfo;
 import com.example.bankcards.security.UserPrincipal;
 import com.example.bankcards.service.CardRequestServiceImpl;
+import com.example.bankcards.service.ICardRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserCardRequestController {
 
-    private final CardRequestServiceImpl cardRequestService;
+    private final ICardRequestService cardRequestService;
 
     @GetMapping()
     public ResponseEntity<List<CardRequestDto>> getMyRequests(@AuthenticationPrincipal UserPrincipal userPrincipal) {

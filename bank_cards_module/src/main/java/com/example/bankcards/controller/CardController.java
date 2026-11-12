@@ -66,6 +66,7 @@ public class CardController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Card update",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = CardDto.class))),
+            @ApiResponse(responseCode = "400", description = "InsufficientFunds"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404", description = "Card not found",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
@@ -103,7 +104,7 @@ public class CardController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProblemDetail.class)))
     })
     @PutMapping("/transfer")
-    public ResponseEntity<Void> transfer(@RequestBody TransferRequest transferRequest) {
+    public ResponseEntity<Void> transfer(@RequestBody @Valid TransferRequest transferRequest) {
         cardService.transfer(transferRequest);
         return ResponseEntity.noContent().build();
     }

@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.Authentication;
@@ -121,6 +122,10 @@ public class CardServiceImpl implements ICardService{
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "cards", key = "#transferRequest.fromCardId"),
+            @CacheEvict(value = "cards", key = "#transferRequest.toCardId")
+    })
     public void transfer(TransferRequest transferRequest) {
 
         Card fromCard = cardRepository.findById(transferRequest.fromCardId())
