@@ -40,16 +40,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserNotOwnerProvidedCardException.class)
     public ProblemDetail userNotOwnerProvidedCardExceptionHandler(UserNotOwnerProvidedCardException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problemDetail.setTitle("Bad request");
+        problemDetail.setTitle("User not owner provided card");
         return problemDetail;
     }
 
     @ExceptionHandler(InsufficientFundsException.class)
     public ProblemDetail insufficientFundsExceptionHandler(InsufficientFundsException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
-        problemDetail.setTitle("Insufficient Funds");
+        problemDetail.setTitle("Insufficient funds");
         return problemDetail;
     }
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ProblemDetail insufficientFundsExceptionHandler(InvalidRefreshTokenException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problemDetail.setTitle("Invalid refresh token");
+        return problemDetail;
+    }
+
+
 
 
 

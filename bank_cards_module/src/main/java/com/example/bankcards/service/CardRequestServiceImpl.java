@@ -14,7 +14,7 @@ import com.example.bankcards.outbox.entity.AggregateType;
 import com.example.bankcards.outbox.service.OutboxService;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.CardRequestRepository;
-import com.example.bankcards.util.CardSecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,7 @@ public class CardRequestServiceImpl implements ICardRequestService {
     private final CardRequestMapper cardRequestMapper;
     private final CardMapper cardMapper;
     private final OutboxService outboxService;
+    private final CardSecurityService cardSecurityService;
 
 
     @Transactional
@@ -85,8 +86,8 @@ public class CardRequestServiceImpl implements ICardRequestService {
         if(processRequestDto.adminAction() == AdminAction.APPROVE) {
             Card card = cardRequest.getCard();
             CardDto cardDto = cardMapper.toCardDto(card);
-            CardSecurityUtils.decrypt(cardDto);
-            CardSecurityUtils.mask(cardDto);
+            cardSecurityService.decrypt(cardDto);
+            cardSecurityService.mask(cardDto);
 
             EventType eventType;
             EventPayload payload;

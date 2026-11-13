@@ -9,20 +9,19 @@ import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.repository.UserRepository;
-import com.example.bankcards.util.CardSecurityUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceUnitTest {
@@ -32,6 +31,9 @@ public class UserServiceUnitTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private CardSecurityService cardSecurityService;
 
 
     @InjectMocks
@@ -45,6 +47,7 @@ public class UserServiceUnitTest {
                 LocalDate.of(2032, 2, 1),
                 Status.ACTIVE,
                 new User(1L, null, null, null, null, null, null, null));
+
         User user = new User(
                 1L,
                 "John",
@@ -62,13 +65,20 @@ public class UserServiceUnitTest {
                 BigDecimal.valueOf(100777.00),
                 Status.ACTIVE,
                 1L);
+        UserDto userDtoFromMapper = new UserDto(
+                1L, "John", "Smith",
+                LocalDate.of(2001, 1, 2),
+                "js1@gmail.com",
+                Role.USER,
+                List.of(encryptedCardDto)
+        );
         CardDto decryptedCardDto = new CardDto(1L,
                 "2111213188871227",
                 LocalDate.of(2032, 2, 1),
                 BigDecimal.valueOf(100777.00),
                 Status.ACTIVE,
                 1L);
-        CardDto cardDtoWithMask = new CardDto(1L,
+        CardDto maskedCardDto = new CardDto(1L,
                 "**** **** **** 1227",
                 LocalDate.of(2032, 2, 1),
                 BigDecimal.valueOf(100777.00),
@@ -82,25 +92,35 @@ public class UserServiceUnitTest {
                 LocalDate.of(2001, 1, 2),
                 "js1@gmail.com",
                 Role.USER,
-                List.of(cardDtoWithMask)
+                List.of(maskedCardDto)
         );
 
-        Mockito.when(userMapper.toUserDto(user)).thenReturn(expectedDto);
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userMapper.toUserDto(user)).thenReturn(userDtoFromMapper);
 
-        try (MockedStatic<CardSecurityUtils> cardUtils = Mockito.mockStatic(CardSecurityUtils.class)){
-            cardUtils.when(() -> CardSecurityUtils.decrypt(encryptedCardDto)).thenReturn(decryptedCardDto);
-            cardUtils.when(() -> CardSecurityUtils.mask(decryptedCardDto)).thenReturn(cardDtoWithMask);
 
-            UserDto actualResult = userService.findById(1L);
-            Assertions.assertThat(actualResult).isEqualTo(expectedDto);
-        }
+
+        when(cardSecurityService.decrypt(any(CardDto.class))).thenAnswer(invocation -> {
+            CardDto dto = invocation.getArgument(0);
+            dto.setCardNumber("2111213188871227");
+            return dto;
+        });
+
+        when(cardSecurityService.mask(any(CardDto.class))).thenAnswer(invocation -> {
+            CardDto dto = invocation.getArgument(0);
+            dto.setCardNumber("**** **** **** 1227");
+            return dto;
+        });
+
+        UserDto actualResult = userService.findById(1L);
+        Assertions.assertThat(actualResult).isEqualTo(expectedDto);
+
 
     }
 
     @Test
     void findById_UserNotFound_ThrowsException() {
-        Mockito.when(userRepository.findById(100L)).thenReturn(Optional.empty());
+        when(userRepository.findById(100L)).thenReturn(Optional.empty());
         Assertions.assertThatThrownBy(() -> userService.findById(100L))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("User with Id = " + 100L + " not found");

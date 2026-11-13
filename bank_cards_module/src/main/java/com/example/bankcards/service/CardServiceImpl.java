@@ -13,7 +13,7 @@ import com.example.bankcards.outbox.service.OutboxService;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.UserPrincipal;
-import com.example.bankcards.util.CardSecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -39,6 +39,7 @@ public class CardServiceImpl implements ICardService{
     private final UserRepository userRepository;
     private final OutboxService outboxService;
     private final CardMapper cardMapper;
+    private final CardSecurityService cardSecurityService;
 
     @Override
     @Transactional
@@ -49,13 +50,13 @@ public class CardServiceImpl implements ICardService{
 
         card.setUser(user);
 
-        CardSecurityUtils.encrypt(card);
+        cardSecurityService.encrypt(card);
 
         Card createdCard = cardRepository.save(card);
 
         CardDto cardDto = cardMapper.toCardDto(createdCard);
-        CardSecurityUtils.decrypt(cardDto);
-        CardSecurityUtils.mask(cardDto);
+        cardSecurityService.decrypt(cardDto);
+        cardSecurityService.mask(cardDto);
 
         CardCreatedPayload payload = new CardCreatedPayload(
                 createdCard.getId(),
@@ -82,8 +83,8 @@ public class CardServiceImpl implements ICardService{
 
         CardDto cardDto = cardMapper.toCardDto(card);
 
-        CardSecurityUtils.decrypt(cardDto);
-        CardSecurityUtils.mask(cardDto);
+        cardSecurityService.decrypt(cardDto);
+        cardSecurityService.mask(cardDto);
 
         return cardDto;
 
@@ -99,14 +100,14 @@ public class CardServiceImpl implements ICardService{
         card.setStatus(updateCardRequest.status());
         card.setBalance(updateCardRequest.balance());
         card.setExpiryDate(updateCardRequest.expiryDate());
-        CardSecurityUtils.encrypt(card);
+        cardSecurityService.encrypt(card);
 
         Card updatedCard = cardRepository.save(card);
 
         CardDto cardDto = cardMapper.toCardDto(updatedCard);
 
-        CardSecurityUtils.decrypt(cardDto);
-        CardSecurityUtils.mask(cardDto);
+        cardSecurityService.decrypt(cardDto);
+        cardSecurityService.mask(cardDto);
 
         return cardDto;
     }
@@ -155,12 +156,12 @@ public class CardServiceImpl implements ICardService{
         fromCard.setBalance(fromCard.getBalance().subtract(transferRequest.amount()));
 
         CardDto toCardDto = cardMapper.toCardDto(toCard);
-        CardSecurityUtils.decrypt(toCardDto);
-        CardSecurityUtils.mask(toCardDto);
+        cardSecurityService.decrypt(toCardDto);
+        cardSecurityService.mask(toCardDto);
 
         CardDto fromCardDto = cardMapper.toCardDto(fromCard);
-        CardSecurityUtils.decrypt(fromCardDto);
-        CardSecurityUtils.mask(fromCardDto);
+        cardSecurityService.decrypt(fromCardDto);
+        cardSecurityService.mask(fromCardDto);
 
 
         TransferCompletedPayload payload = new TransferCompletedPayload(

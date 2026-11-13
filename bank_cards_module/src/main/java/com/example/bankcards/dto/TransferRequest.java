@@ -19,10 +19,7 @@ public record TransferRequest (
         @Schema(description = "Transfer amount", example = "5000")
         @NotNull
         @Positive
-        BigDecimal amount,
+        BigDecimal amount
 
-        @Schema(description = "User id", example = "101")
-        @NotNull
-        Long userId
 ) {
 }

@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.entity.RefreshToken;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.exception.InvalidRefreshTokenException;
 import com.example.bankcards.repository.RefreshTokenRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
@@ -43,11 +44,12 @@ public class RefreshTokenService {
 
     public RefreshToken verifyToken(String token){
         RefreshToken refreshToken = refreshTokenRepository.
-                findByToken(token).orElseThrow(() -> new RuntimeException("Refresh token not found"));
+                findByToken(token).orElseThrow(() -> new InvalidRefreshTokenException("Refresh token not found"));
 
         if(refreshToken.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(refreshToken);
-            throw new RuntimeException("Refresh token expired");
+            throw new InvalidRefreshTokenException("Refresh token expired");
+            //throw new RuntimeException("Refresh token expired");
         }
 
         return refreshToken;

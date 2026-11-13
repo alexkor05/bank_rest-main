@@ -8,7 +8,6 @@ import com.example.bankcards.outbox.dto.UserRegisteredPayload;
 import com.example.bankcards.outbox.entity.AggregateType;
 import com.example.bankcards.outbox.service.OutboxService;
 import com.example.bankcards.repository.UserRepository;
-import com.example.bankcards.util.CardSecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,7 @@ public class UserServiceImpl implements IUserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OutboxService outboxService;
+    private final CardSecurityService cardSecurityService;
 
 
     @Cacheable(value = "users", key = "#id")
@@ -119,8 +119,8 @@ public class UserServiceImpl implements IUserService{
 
     private void maskCards(UserDto userDto) {
         for(CardDto cardDto : userDto.cards()) {
-            CardSecurityUtils.decrypt(cardDto);
-            CardSecurityUtils.mask(cardDto);
+            cardSecurityService.decrypt(cardDto);
+            cardSecurityService.mask(cardDto);
         }
     }
 
