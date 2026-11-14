@@ -5,6 +5,7 @@ package com.example.email.config;
 import com.example.email.dto.BankEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -21,10 +22,13 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConsumerConfig {
 
+    @Value("${app.kafka.bootstrap-servers}")
+    private String BOOTSTRAP_SERVERS;
+
     @Bean
     public ConsumerFactory<String, BankEvent> kafkaConsumer() {
         Map<String, Object> kafkaConfiguration = new HashMap<>();
-        kafkaConfiguration.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        kafkaConfiguration.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         kafkaConfiguration.put(ConsumerConfig.GROUP_ID_CONFIG, "email-service-group");
         kafkaConfiguration.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         kafkaConfiguration.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);

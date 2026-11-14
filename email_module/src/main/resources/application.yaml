@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/bank_cards
-    username: postgres
-    password: korobov
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true
@@ -44,3 +44,4 @@ app:
   kafka:
     topics:
       bankEvents: bank-events
+    bootstrap-servers: "localhost:9092"

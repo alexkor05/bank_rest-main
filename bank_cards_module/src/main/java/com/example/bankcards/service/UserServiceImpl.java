@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.*;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.exception.EmailAlreadyExistsException;
 import com.example.bankcards.exception.EntityNotFoundException;
 import com.example.bankcards.mapper.UserMapper;
 import com.example.bankcards.outbox.dto.UserRegisteredPayload;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,26 +54,35 @@ public class UserServiceImpl implements IUserService{
 
     @Transactional
     public UserDto createUser(CreateUserRequest createUserRequest) {
+        if(userRepository.existsByEmail(createUserRequest.email())) {
+            throw new EmailAlreadyExistsException(createUserRequest.email());
+        }
+
         User user = userMapper.toUser(createUserRequest);
         user.setPassword(passwordEncoder.encode(createUserRequest.password()));
-        User createdUser = userRepository.save(user);
-        UserDto userDto = userMapper.toUserDto(createdUser);
 
-        maskCards(userDto);
+        try {
+            User createdUser = userRepository.save(user);
+            UserDto userDto = userMapper.toUserDto(createdUser);
 
-        UserRegisteredPayload payload = new UserRegisteredPayload(
-                user.getId(),
-                user.getEmail(),
-                user.getFirstname(),
-                user.getLastname()
-        );
-        outboxService.saveEvent(
-                AggregateType.USER,
-                user.getId(),
-                EventType.USER_REGISTERED,
-                payload
-        );
-        return userDto;
+            maskCards(userDto);
+
+            UserRegisteredPayload payload = new UserRegisteredPayload(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getFirstname(),
+                    user.getLastname()
+            );
+            outboxService.saveEvent(
+                    AggregateType.USER,
+                    user.getId(),
+                    EventType.USER_REGISTERED,
+                    payload
+            );
+            return userDto;
+        } catch (DataIntegrityViolationException ex) {
+            throw new EmailAlreadyExistsException(createUserRequest.email());
+        }
     }
 
 

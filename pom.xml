@@ -107,9 +107,6 @@
             <artifactId>spring-boot-starter-kafka</artifactId>
         </dependency>
 
-
-
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

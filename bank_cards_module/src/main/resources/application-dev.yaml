@@ -3,8 +3,8 @@ spring:
   datasource:
 #    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/bank_cards}
     url: ${SPRING_DATASOURCE_URL}
-    username: postgres
-    password: korobov
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true
@@ -53,5 +53,5 @@ app:
 
 security:
   card:
-    pass: "Samsung"
-    salt: "a28ad94dde798a004e4d"
+    pass: ${SECURITY_CARD_PASS}
+    salt: ${SECURITY_CARD_SALT}

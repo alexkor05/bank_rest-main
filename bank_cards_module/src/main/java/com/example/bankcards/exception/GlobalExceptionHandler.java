@@ -2,6 +2,7 @@ package com.example.bankcards.exception;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.*;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -51,13 +52,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
     @ExceptionHandler(InvalidRefreshTokenException.class)
-    public ProblemDetail insufficientFundsExceptionHandler(InvalidRefreshTokenException ex) {
+    public ProblemDetail invalidRefreshTokenExceptionHandler(InvalidRefreshTokenException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
         problemDetail.setTitle("Invalid refresh token");
         return problemDetail;
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail badCredentialsExceptionalHandler(BadCredentialsException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problemDetail.setTitle("Invalid credentials");
+        return problemDetail;
+    }
 
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ProblemDetail emailAlreadyExistsExceptionHandler(EmailAlreadyExistsException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problemDetail.setProperty("email", ex.getEmail());
+        problemDetail.setTitle("Email already exists");
+
+        return problemDetail;
+    }
 
 
 
